@@ -1,5 +1,11 @@
 package flow
 
+import (
+	"io/ioutil"
+	"os"
+	"strconv"
+)
+
 var std *Graph
 
 type Graph struct {
@@ -49,19 +55,33 @@ func Connect(n1, a1, n2, a2 int) {
 	std.Connect(n1, a1, n2, a2)
 }
 
-func safeLen(s []interface{}) int {
-	if s == nil {
-		return 0
-	}
-	return len(s)
-}
-
 func (g *Graph) Dims(slices ...[]interface{}) []int {
 	return []int{len(g.graph), len(g.graph[0]), len(g.graph[0][0]), len(g.graph[0][0][0])}
 }
 
 func (g *Graph) Dump(path string) {
+	os.Open(path)
 
+	str := ""
+
+	// Edges
+	for n1 := range g.graph {
+		for a1 := range g.graph[n1] {
+			for n2 := range g.graph[n1][a1] {
+				for a2 := range g.graph[n1][a1][n2] {
+					if g.graph[n1][a1][n2][a2] != 0 {
+						str += strconv.Itoa(n1) + "x" + strconv.Itoa(a1) + "->" + strconv.Itoa(n2) + "x" + strconv.Itoa(a2) + ";\n"
+					}
+				}
+			}
+		}
+	}
+
+	ioutil.WriteFile(path, []byte(str), 0666)
+}
+
+func Dump(path string) {
+	std.Dump(path)
 }
 
 func Dims() []int {

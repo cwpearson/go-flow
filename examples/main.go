@@ -48,17 +48,19 @@ func main() {
 	b := 2
 
 	// Define tasks
+	// Hook defines a function that is called on each task output
 	t1 := flow.NewGoTask(incSource, []string{"x"}, []string{"y"})
 	t2 := flow.NewGoTask(decSource, []string{"x"}, []string{"y"})
 	t3 := flow.NewGoTask(mulSource, []string{"x", "y"}, []string{"z"})
+	t3.Merge(t1, t2).Hook(Print)
 
-	n1 := t1
+	// dump the connections
+	flow.Dump("graph.dot")
 
-	t3.Merge(n1, t2).Hook(Print)
-
+	// Inject inputs into the tasks
 	t1.InputInt(a)
 	t2.InputInt(b)
 
+	// Wait for completion
 	t3.Wait()
-
 }
